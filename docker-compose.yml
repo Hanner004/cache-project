@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  postgres:
+    container_name: postgres-db
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+    ports:
+      - ${PGPORT}:${PGPORT}
+
+    networks:
+      - backend_network
+    restart: unless-stopped
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    container_name: redis-db
+    image: redis
+    environment:
+      - REDIS_PORT=${RDS_PORT}
+    ports:
+      - ${RDS_PORT}:${RDS_PORT}
+
+    networks:
+      - backend_network
+    restart: unless-stopped
+
+    volumes:
+      - testing_rds:/data
+
+networks:
+  backend_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  testing_rds:
+    driver: local
