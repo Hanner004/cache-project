@@ -9,6 +9,9 @@ export class UserRepository extends Repository<User> {
   }
 
   async getUsers() {
-    return await this.createQueryBuilder('u').withDeleted().getMany();
+    return await this.createQueryBuilder('user')
+      .withDeleted()
+      .orderBy('user.created_at', 'DESC')
+      .getMany();
   }
 }

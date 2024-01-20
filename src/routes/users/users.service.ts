@@ -4,12 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from 'src/database/repositories';
 import { encryptPassword } from 'src/utils/functions';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UsersService {
@@ -34,14 +34,7 @@ export class UsersService {
   }
 
   async findAll() {
-    const usersKey = 'users-key';
-    const cachedUsers = await this.cacheManager.get(usersKey);
-    if (cachedUsers) {
-      return cachedUsers;
-    }
-    const usersFound = await this.userRepository.getUsers();
-    await this.cacheManager.set(usersKey, usersFound, 1000 * 10);
-    return usersFound;
+    return await this.userRepository.getUsers();
   }
 
   async findOne(id: string) {

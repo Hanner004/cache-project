@@ -1,6 +1,6 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheModule, CacheModuleAsyncOptions } from '@nestjs/cache-manager';
 import { Logger } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisStore } from 'cache-manager-redis-yet';
 
 export const redisProvider = CacheModule.registerAsync({
@@ -8,17 +8,12 @@ export const redisProvider = CacheModule.registerAsync({
   inject: [ConfigService],
   isGlobal: true,
   useFactory: async (configService: ConfigService) => {
-    return {
-      store: await redisStore({
-        socket: {
-          host: configService.get<string>('RDS_HOST'),
-          port: configService.get<number>('RDS_PORT'),
-        },
-      }),
-      then: Logger.debug(
-        `redis host:${configService.get<string>('RDS_HOST')}`,
-        `DB =>`,
-      ),
+    const socketConfig = {
+      host: configService.get<string>('RDS_HOST'),
+      port: configService.get<number>('RDS_PORT'),
     };
+    const store = await redisStore({ socket: socketConfig });
+    Logger.debug(`Redis host: ${socketConfig.host}`, 'Redis Module');
+    return { store };
   },
-});
+} as CacheModuleAsyncOptions);

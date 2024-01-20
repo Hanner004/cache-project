@@ -21,8 +21,8 @@ export const databaseProvider = TypeOrmModule.forRootAsync({
       entities: entitiesLists,
       synchronize: false,
       then: Logger.debug(
-        `postgres host:${configService.get<string>('PGHOST')}`,
-        `DB =>`,
+        `PostgreSQL host:${configService.get<string>('PGHOST')}`,
+        `Database Module`,
       ),
     };
   },

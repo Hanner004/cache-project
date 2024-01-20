@@ -1,7 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 require('dotenv').config();
 
-const config: DataSourceOptions = {
+const databaseConfig: DataSourceOptions = {
   type: 'postgres',
   host: process.env.PGHOST,
   port: Number(process.env.PGPORT),
@@ -18,4 +18,4 @@ const config: DataSourceOptions = {
   migrations: ['./migrations/*.{js,ts}'],
 };
 
-export const dataSource = new DataSource(config);
+export const dataSource = new DataSource(databaseConfig);
