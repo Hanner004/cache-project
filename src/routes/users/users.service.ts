@@ -10,7 +10,7 @@ import { encryptPassword } from 'src/utils/functions';
 
 @Injectable()
 export class UsersService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async create({ email, password }: CreateUserDto) {
     const userEmailFound = await this.userRepository.findOne({

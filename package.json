@@ -18,11 +18,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "migrations:generate": "rimraf migrations && npm run typeorm -- migration:generate --config ./orm.config.json --name",
-    "migrations:run": "npm run typeorm -- migration:run --config ./orm.config.json",
-    "migrations:drop": "npm run typeorm -- schema:drop --config ./orm.config.json",
-    "migrations:show": "npm run typeorm -- migration:show --config ./orm.config.json"
+    "typeorm": "typeorm-ts-node-commonjs -d ./src/database/orm-config.ts",
+    "migrations:generate": "rimraf migrations && npm run typeorm -- migration:generate ./migrations/m",
+    "migrations:run": "npm run typeorm -- migration:run",
+    "migrations:drop": "npm run typeorm -- schema:drop",
+    "migrations:show": "npm run typeorm -- migration:show"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.1",
