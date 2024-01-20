@@ -37,7 +37,7 @@ export class UsersController {
     return await this.usersService.remove(id);
   }
 
-  @Get('/generate')
+  @Get('/generate/service')
   async generate() {
     return await this.usersService.generate();
   }

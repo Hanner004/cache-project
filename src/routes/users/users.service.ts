@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,10 +8,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from 'src/database/repositories';
 import { encryptPassword } from 'src/utils/functions';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly userRepository: UserRepository,
+  ) {}
 
   async create({ email, password }: CreateUserDto) {
     const userEmailFound = await this.userRepository.findOne({
@@ -28,7 +34,14 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.userRepository.getUsers();
+    const usersKey = 'users-key';
+    const cachedUsers = await this.cacheManager.get(usersKey);
+    if (cachedUsers) {
+      return cachedUsers;
+    }
+    const usersFound = await this.userRepository.getUsers();
+    await this.cacheManager.set(usersKey, usersFound, 1000 * 10);
+    return usersFound;
   }
 
   async findOne(id: string) {
@@ -44,7 +57,7 @@ export class UsersService {
   }
 
   async generate() {
-    for (let i = 1; i <= 50; i++) {
+    for (let i = 1; i <= 1000; i++) {
       await this.userRepository.save(
         this.userRepository.create({
           email: `generated-#${i}@testing.com`,
